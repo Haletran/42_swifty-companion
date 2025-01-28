@@ -85,7 +85,7 @@ export default function UserScreen() {
                 }
                 const result = await useFetchData(token, input);
                 console.log(result);
-                setData(result);
+                if (result) { setData(result) }
                 setLoading(false);
             }
         } catch (error) {
@@ -107,7 +107,7 @@ export default function UserScreen() {
             location: data.location,
             photo: data.image.versions.small,
             cursus_users: data.cursus_users,
-            skills: data.cursus_users[1].skills.map(skill => `${skill.name} - ${skill.level}`),
+            skills: data.cursus_users[1]?.skills.map(skill => `${skill.name} - ${skill.level} - ${(skill.level / 21 * 100).toFixed(2)}%`) || data.cursus_users[0]?.skills.map(skill => `${skill.name} - ${skill.level} - ${(skill.level / 21 * 100).toFixed(2)}%`),
             projects_users: data.projects_users,
         };
     }
@@ -138,8 +138,8 @@ export default function UserScreen() {
                         </View>
                     </View>
                     <View style={{ height: 20 }} />
-                    <View style={styles.profileCard}>
-                        <Text style={styles.label}>Skills:</Text>
+                    <View style={styles.projectCard}>
+                        <Text style={styles.title}>Skills:</Text>
                         {student.skills.map((skill, index) => (
                             <Text key={index} style={styles.value}>
                                 {skill}
@@ -147,11 +147,11 @@ export default function UserScreen() {
                         ))}
                     </View>
                     <View style={{ height: 20 }} />
-                    <View style={styles.profileCard}>
-                        <Text style={styles.label}>Projects:</Text>
+                    <View style={styles.projectCard}>
+                        <Text style={styles.title}>Projects:</Text>
                         {student.projects_users.map((project, index) => (
                             <Text key={index} style={styles.value}>
-                                {project.project.name} - Mark: {project.final_mark} - Status: {project.status}
+                                {project.project.name} - Mark: {project.final_mark} - Status: {project.status === "finished" ? "Done ✅" : "In progress"}
                             </Text>
                         ))}
                     </View>
@@ -193,6 +193,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '90%',
     },
+    projectCard: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
+        padding: 16,
+        alignItems: 'flex-start',
+        width: '90%',
+    },
     img: {
         width: 120,
         height: 120,
@@ -212,4 +224,10 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         color: '#333',
     },
+    title: { 
+        fontSize: 24, 
+        fontWeight: 'bold', 
+        color: '#333', 
+        marginBottom: 10,
+    }
 });
