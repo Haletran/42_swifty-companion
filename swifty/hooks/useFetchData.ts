@@ -1,7 +1,7 @@
 const BASE_URL = "https://api.intra.42.fr";
 const TOKEN_URL = `${BASE_URL}/oauth/token`;
-const CLIENT_ID = ``;
-const CLIENT_SECRET = ``;
+const CLIENT_ID = process.env("CLIENT_ID");
+const CLIENT_SECRET = process.env("CLIENT_SECRET");
 const TOKEN_DATA = `grant_type=client_credentials&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`;
 
 export async function getToken() {
@@ -19,9 +19,10 @@ export async function getToken() {
     }
 }
 
-export async function useFetchData(url: string) {
+export async function useFetchData(token: string, url: string) {
     try {
-        let token = await getToken();
+        if (!token || !url)
+            console.error("Error:");
         const response = await fetch(`${BASE_URL}/v2/users/${url}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
