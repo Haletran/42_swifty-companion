@@ -1,16 +1,18 @@
 // index.tsx
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
   const [inputValue, setInputValue] = useState('');
+  const [searches, setSearches] = useState(0);
   const router = useRouter();
 
   const handleSearch = () => {
     if (!inputValue) {
       return;
     }
+    setSearches(searches + 1);
     router.push({ pathname: '/UserScreen', params: { input: inputValue } });
   }
 
@@ -27,6 +29,8 @@ export default function HomeScreen() {
         title="Search"
         onPress={handleSearch}
       />
+      <Text style={styles.textInfo}>⚠️ Only 1200 searches allowed per hour</Text>
+      <Text style={styles.textInfo}>🔍 Searches: {searches}/1200</Text>
     </View>
   );
 }
@@ -34,9 +38,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 16,
+    justifyContent: 'center',
   },
   input: {
     height: 40,
@@ -46,8 +49,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 4,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 4,
-  }
+  textInfo: {
+    textAlign: 'center',
+    marginTop: 12,
+  },
 });
