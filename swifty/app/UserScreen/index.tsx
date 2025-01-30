@@ -89,7 +89,6 @@ export default function UserScreen() {
                     }
                 }
                 const result = await useFetchData(token, input);
-                console.log(result);
                 if (result) { setData(result) }
                 setLoading(false);
             }
@@ -102,7 +101,7 @@ export default function UserScreen() {
         fetchData();
     }, [input, token]);
 
-    if (data) {
+    if (data && data.usual_full_name) {
         student = {
             name: data.usual_full_name,
             login: data.login,
@@ -116,6 +115,9 @@ export default function UserScreen() {
             skills: data.cursus_users[1]?.skills.map(skill => `${skill.name} - ${skill.level} - ${(skill.level / 21 * 100).toFixed(2)}%`) || data.cursus_users[0]?.skills.map(skill => `${skill.name} - ${skill.level} - ${(skill.level / 21 * 100).toFixed(2)}%`),
             projects_users: data.projects_users,
         };
+    }
+    else {
+        student = null;
     }
 
     const _goBack = () => {
@@ -134,7 +136,7 @@ export default function UserScreen() {
                         <ActivityIndicator size="large" color="#0d1b2a" />
                     </View>
                 )}
-                {!loading && !data && <Text style={styles.noDataText}>No data found</Text>}
+                {!loading && !student && <Text style={styles.noDataText}>No User found</Text>}
                 {!loading && data && student && (
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <Card>
