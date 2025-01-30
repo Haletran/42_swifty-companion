@@ -12,5 +12,7 @@ stdenv.mkDerivation {
     ];
     shellHook = ''
         export PATH="$PWD/node_modules/.bin/:$PATH"
+        cd swifty && npm install
+        npm run web
     '';
 }

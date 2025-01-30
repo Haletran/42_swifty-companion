@@ -1,14 +1,16 @@
-import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, StyleSheet, Image, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useFetchData, getToken, checkIfTokenIsValid } from '@/hooks/useFetchData';
 import { useEffect, useState } from 'react';
+import { Card, Text, Avatar, ProgressBar, MD3Colors } from 'react-native-paper';
 
 interface Student {
     name: string;
     login: string;
     email: string;
     wallet: number;
+    level: number;
     correction_point: number;
     location: string;
     photo: string;
@@ -38,6 +40,8 @@ interface ApiResponse {
     image: {
         versions: {
             small: string;
+            medium: string;
+            large: string;
         };
     };
     projects_users: Array<{
@@ -48,6 +52,7 @@ interface ApiResponse {
         status: string;
     }>;
     cursus_users: {
+        level: number;
         skills: {
             name: string;
             level: number;
@@ -105,8 +110,9 @@ export default function UserScreen() {
             wallet: data.wallet,
             correction_point: data.correction_point,
             location: data.location,
-            photo: data.image.versions.small,
+            photo: data.image.versions.large,
             cursus_users: data.cursus_users,
+            level: data.cursus_users[1]?.level || data.cursus_users[0]?.level,
             skills: data.cursus_users[1]?.skills.map(skill => `${skill.name} - ${skill.level} - ${(skill.level / 21 * 100).toFixed(2)}%`) || data.cursus_users[0]?.skills.map(skill => `${skill.name} - ${skill.level} - ${(skill.level / 21 * 100).toFixed(2)}%`),
             projects_users: data.projects_users,
         };
@@ -122,42 +128,65 @@ export default function UserScreen() {
             {!loading && !data && <Text style={styles.noDataText}>No data found</Text>}
             {!loading && data && student && (
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    <View style={styles.profileCard}>
-                        <Image source={{ uri: student.photo }} style={styles.img} />
-                        <View style={styles.profileDetails}>
-                            <Text style={styles.label}>Name:</Text>
-                            <Text style={styles.value}>{student.name}</Text>
-                            <Text style={styles.label}>Login:</Text>
-                            <Text style={styles.value}>{student.login}</Text>
-                            <Text style={styles.label}>Location:</Text>
-                            {student.location ? <Text style={styles.value}>{student.location}</Text> : <Text style={styles.value}>Unavailable</Text>}
-                            <Text style={styles.label}>Email:</Text>
-                            <Text style={styles.value}>{student.email}</Text>
-                            <Text style={styles.label}>Wallet:</Text>
-                            <Text style={styles.value}>{student.wallet}₳</Text>
-                        </View>
-                    </View>
-                    <View style={{ height: 20 }} />
-                    <View style={styles.projectCard}>
-                        <Text style={styles.title}>Skills:</Text>
-                        {student.skills.map((skill, index) => (
-                            <Text key={index} style={styles.value}>
-                                {skill}
-                            </Text>
-                        ))}
-                    </View>
-                    <View style={{ height: 20 }} />
-                    <View style={styles.projectCard}>
-                        <Text style={styles.title}>Projects:</Text>
-                        {student.projects_users.map((project, index) => (
-                            <Text key={index} style={styles.value}>
-                                {project.project.name} - Mark: {project.final_mark} - Status: {project.status === "finished" ? "Done ✅" : "In progress"}
-                            </Text>
-                        ))}
-                    </View>
+                    <Card>
+                        <Card.Cover source={{ uri: student.photo }} />
+                    </Card>
+                    <View style={{ padding: 10 }} />
+                    <Card>
+                        <Card.Content>
+                            <Text variant="titleLarge">{student.name} ({student.login})</Text>
+                            <View style={{ padding: 5 }} />
+                            <ProgressBar progress={student.level / 21} color="rgb(13, 27, 42)" />
+                            <Text variant="bodyMedium" >{student.level.toFixed(2)}</Text>
+                            <View style={{ padding: 5 }} />
+                            <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Email: </Text>{student.email}</Text>
+                            <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Location: </Text>{student.location ? student.location : "Not available"}</Text>
+                            <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Wallet: </Text>{student.wallet}₳</Text>
+                        </Card.Content>
+                    </Card>
+                    <View style={{ padding: 5 }} />
+                    <Card>
+                        <Card.Title
+                            title="Skills"
+                            subtitle="List of skills and their levels"
+                            left={(props: any) => <Avatar.Icon {...props} icon="abacus" />}
+                        />
+                        <Card.Content>
+                            {student.skills.map((skill, index) => (
+                                <View key={index} style={{ marginBottom: 10 }}>
+                                    <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{skill.split(' - ')[0]}</Text>
+                                    <Text variant="bodyMedium">Level: {skill.split(' - ')[1]} | {skill.split(' - ')[2]}</Text>
+                                </View>
+                            ))}
+                        </Card.Content>
+                    </Card>
+                    <View style={{ padding: 5 }} />
+                    <Card>
+                        <Card.Title
+                            title="Projects"
+                            subtitle="list of projects and their status"
+                            left={(props: any) => <Avatar.Icon {...props} icon="folder" />}
+                        />
+                        <Card.Content>
+                            {student.projects_users.map((project, index) => (
+                                <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <View style={{ flex: 1 }}>
+                                        <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{project.project.name}</Text>
+                                        <Text variant="bodyMedium">Status: {project.status}</Text>
+                                    </View>
+                                    <Text variant="bodyMedium" style={{ fontWeight: 'bold', marginLeft: 10 }}>
+                                        {project.final_mark ?? '-'}
+                                        {project.final_mark && '/100'}
+                                        {project.final_mark && project.final_mark >= 65 ? ' ✅' : ' ❌'}
+                                    </Text>
+                                </View>
+                            ))}
+                        </Card.Content>
+                    </Card>
                 </ScrollView>
-            )}
-        </SafeAreaView>
+            )
+            }
+        </SafeAreaView >
     );
 }
 
@@ -179,55 +208,6 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         paddingVertical: 20,
-        alignItems: 'center',
+        paddingHorizontal: 10,
     },
-    profileCard: {
-        backgroundColor: '#fff',
-        borderRadius: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-        padding: 16,
-        alignItems: 'center',
-        width: '90%',
-    },
-    projectCard: {
-        backgroundColor: '#fff',
-        borderRadius: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-        padding: 16,
-        alignItems: 'flex-start',
-        width: '90%',
-    },
-    img: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        marginBottom: 16,
-    },
-    profileDetails: {
-        width: '100%',
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#555',
-    },
-    value: {
-        fontSize: 16,
-        marginBottom: 8,
-        color: '#333',
-    },
-    title: { 
-        fontSize: 24, 
-        fontWeight: 'bold', 
-        color: '#333', 
-        marginBottom: 10,
-    }
 });

@@ -1,7 +1,8 @@
 // index.tsx
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, TextInput, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Button, Searchbar } from 'react-native-paper';
 
 export default function HomeScreen() {
   const [inputValue, setInputValue] = useState('');
@@ -18,16 +19,11 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Enter the login..."
-        placeholderTextColor="grey"
-        style={styles.input}
-        onChangeText={text => setInputValue(text)}
+      <Searchbar
+        placeholder="Search"
+        onChangeText={(text: any) => setInputValue(text)}
         value={inputValue}
-      />
-      <Button
-        title="Search"
-        onPress={handleSearch}
+        onSubmitEditing={handleSearch}
       />
       <Text style={styles.textInfo}>⚠️ Only 1200 searches allowed per hour</Text>
       <Text style={styles.textInfo}>🔍 Searches: {searches}/1200</Text>
