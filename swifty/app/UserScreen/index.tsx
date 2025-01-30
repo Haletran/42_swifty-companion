@@ -145,11 +145,12 @@ export default function UserScreen() {
                             <Card.Content>
                                 <Text variant="titleLarge">{student.name} ({student.login})</Text>
                                 <View style={{ padding: 5 }} />
-                                <ProgressBar progress={student.level / 21} color="rgb(13, 27, 42)" />
+                                <ProgressBar progress={student.level % 1} />
                                 <Text variant="bodyMedium" >{student.level.toFixed(2)}</Text>
                                 <View style={{ padding: 5 }} />
                                 <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Email: </Text>{student.email}</Text>
                                 <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Location: </Text>{student.location ? student.location : "Not available"}</Text>
+                                <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Correction Points: </Text>{student.correction_point}</Text>
                                 <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Wallet: </Text>{student.wallet}₳</Text>
                             </Card.Content>
                         </Card>
@@ -168,7 +169,7 @@ export default function UserScreen() {
                                     <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <View style={{ flex: 1 }}>
                                             <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{skill.split(' - ')[0]}</Text>
-                                            <Text variant="bodyMedium">Level: {skill.split(' - ')[1]} | {skill.split(' - ')[2]}</Text><ProgressBar progress={parseInt(skill.split(' - ')[1]) / 21} color={MD3Colors[parseInt(skill.split(' - ')[1])]} />
+                                            <Text variant="bodyMedium">Level: {skill.split(' - ')[1]} | {skill.split(' - ')[2]}</Text><ProgressBar progress={parseInt(skill.split(' - ')[1]) / 21} />
                                         </View>
                                     </View>
                                 ))}
@@ -185,30 +186,33 @@ export default function UserScreen() {
                             />
                             <Card.Content>
                                 {!student.projects_users.length && <Text variant="bodyMedium">No projects found...</Text>}
-                                {student.projects_users.map((project, index) => (
-                                    <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <View style={{ flex: 1 }}>
-                                            <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{project.project.name}</Text>
-                                            <Text variant="bodyMedium">Status: {project.status}</Text>
+                                <ScrollView style={{ maxHeight: 300, padding: 10 }}>
+                                    {student.projects_users.map((project, index) => (
+                                        <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <View style={{ flex: 1 }}>
+                                                <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{project.project.name}</Text>
+                                                <Text variant="bodyMedium">Status: {project.status}</Text>
+                                            </View>
+                                            <Text variant="bodyMedium" style={{ fontWeight: 'bold', marginLeft: 10 }}>
+                                                {project.final_mark}
+                                                {project.final_mark && '/100'}
+                                                {project.status === 'finished' && project.final_mark > 65 && ' ✅'}
+                                                {project.status === 'finished' && project.final_mark <= 65 && ' ❌'}
+                                                {project.status === 'in_progress' && project.final_mark <= 0 && ' ⏳'}
+                                                {project.status === 'in_progress' && project.final_mark == 100 && ' ✅'}
+                                                {project.status === 'searching_a_group' && ' 🔍'}
+                                                {project.status === 'waiting_for_correction' && ' 🕒'}
+                                            </Text>
                                         </View>
-                                        <Text variant="bodyMedium" style={{ fontWeight: 'bold', marginLeft: 10 }}>
-                                            {project.final_mark}
-                                            {project.final_mark && '/100'}
-                                            {project.status === 'finished' && project.final_mark > 65 && ' ✅'}
-                                            {project.status === 'finished' && project.final_mark <= 65 && ' ❌'}
-                                            {project.status === 'in_progress' && project.final_mark <= 0 && ' ⏳'}
-                                            {project.status === 'in_progress' && project.final_mark == 100 && ' ✅'}
-                                            {project.status === 'searching_a_group' && ' 🔍'}
-                                        </Text>
-                                    </View>
-                                ))}
+                                    ))}
+                                </ScrollView>
                             </Card.Content>
                         </Card>
                     </ScrollView>
                 )
                 }
             </SafeAreaView >
-        </View>
+        </View >
     );
 }
 
