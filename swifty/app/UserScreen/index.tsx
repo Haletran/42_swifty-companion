@@ -3,7 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useFetchData, getToken, checkIfTokenIsValid } from '@/hooks/useFetchData';
 import { useEffect, useState } from 'react';
-import { Card, Text, Avatar, ProgressBar, MD3Colors } from 'react-native-paper';
+import { Card, Text, Avatar, ProgressBar, MD3Colors, Appbar } from 'react-native-paper';
 
 interface Student {
     name: string;
@@ -118,79 +118,102 @@ export default function UserScreen() {
         };
     }
 
+    const _goBack = () => {
+        window.history.back();
+    }
+
     return (
-        <SafeAreaView style={styles.container}>
-            {loading && (
-                <View style={styles.spinnerContainer}>
-                    <ActivityIndicator size="large" color="#0d1b2a" />
-                </View>
-            )}
-            {!loading && !data && <Text style={styles.noDataText}>No data found</Text>}
-            {!loading && data && student && (
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    <Card>
-                        <Card.Cover source={{ uri: student.photo }} />
-                    </Card>
-                    <View style={{ padding: 10 }} />
-                    <Card>
-                        <Card.Content>
-                            <Text variant="titleLarge">{student.name} ({student.login})</Text>
-                            <View style={{ padding: 5 }} />
-                            <ProgressBar progress={student.level / 21} color="rgb(13, 27, 42)" />
-                            <Text variant="bodyMedium" >{student.level.toFixed(2)}</Text>
-                            <View style={{ padding: 5 }} />
-                            <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Email: </Text>{student.email}</Text>
-                            <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Location: </Text>{student.location ? student.location : "Not available"}</Text>
-                            <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Wallet: </Text>{student.wallet}₳</Text>
-                        </Card.Content>
-                    </Card>
-                    <View style={{ padding: 5 }} />
-                    <Card>
-                        <Card.Title
-                            title="Skills"
-                            subtitle="List of skills and their levels"
-                            left={(props: any) => <Avatar.Icon {...props} icon="abacus" />}
-                        />
-                        <Card.Content>
-                            {student.skills.map((skill, index) => (
-                                <View key={index} style={{ marginBottom: 10 }}>
-                                    <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{skill.split(' - ')[0]}</Text>
-                                    <Text variant="bodyMedium">Level: {skill.split(' - ')[1]} | {skill.split(' - ')[2]}</Text>
-                                </View>
-                            ))}
-                        </Card.Content>
-                    </Card>
-                    <View style={{ padding: 5 }} />
-                    <Card>
-                        <Card.Title
-                            title="Projects"
-                            subtitle="list of projects and their status"
-                            left={(props: any) => <Avatar.Icon {...props} icon="folder" />}
-                        />
-                        <Card.Content>
-                            {student.projects_users.map((project, index) => (
-                                <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <View style={{ flex: 1 }}>
-                                        <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{project.project.name}</Text>
-                                        <Text variant="bodyMedium">Status: {project.status}</Text>
+        <View style={styles.main}>
+            <Appbar.Header>
+                <Appbar.BackAction onPress={_goBack} />
+                <Appbar.Content title={input} />
+            </Appbar.Header>
+            <SafeAreaView style={styles.container}>
+                {loading && (
+                    <View style={styles.spinnerContainer}>
+                        <ActivityIndicator size="large" color="#0d1b2a" />
+                    </View>
+                )}
+                {!loading && !data && <Text style={styles.noDataText}>No data found</Text>}
+                {!loading && data && student && (
+                    <ScrollView contentContainerStyle={styles.scrollContainer}>
+                        <Card>
+                            <Card.Cover source={{ uri: student.photo }} />
+                            <View style={{ padding: 10 }} />
+                            <Card.Content>
+                                <Text variant="titleLarge">{student.name} ({student.login})</Text>
+                                <View style={{ padding: 5 }} />
+                                <ProgressBar progress={student.level / 21} color="rgb(13, 27, 42)" />
+                                <Text variant="bodyMedium" >{student.level.toFixed(2)}</Text>
+                                <View style={{ padding: 5 }} />
+                                <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Email: </Text>{student.email}</Text>
+                                <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Location: </Text>{student.location ? student.location : "Not available"}</Text>
+                                <Text variant="bodyMedium"><Text style={{ fontWeight: 'bold' }}>Wallet: </Text>{student.wallet}₳</Text>
+                            </Card.Content>
+                        </Card>
+                        <View style={{ padding: 5 }} />
+                        <Card>
+                            <Card.Title
+                                title="Skills"
+                                titleStyle={{ fontSize: 14, fontWeight: 'bold' }}
+                                subtitle="List of skills and their levels"
+                                subtitleStyle={{ color: "grey" }}
+                                left={(props: any) => <Avatar.Icon {...props} icon="dumbbell" />}
+                            />
+                            <Card.Content>
+                                {!student.skills.length && <Text variant="bodyMedium">No skills found...</Text>}
+                                {student.skills.map((skill, index) => (
+                                    <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <View style={{ flex: 1 }}>
+                                            <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{skill.split(' - ')[0]}</Text>
+                                            <Text variant="bodyMedium">Level: {skill.split(' - ')[1]} | {skill.split(' - ')[2]}</Text><ProgressBar progress={parseInt(skill.split(' - ')[1]) / 21} color={MD3Colors[parseInt(skill.split(' - ')[1])]} />
+                                        </View>
                                     </View>
-                                    <Text variant="bodyMedium" style={{ fontWeight: 'bold', marginLeft: 10 }}>
-                                        {project.final_mark ?? '-'}
-                                        {project.final_mark && '/100'}
-                                        {project.final_mark && project.final_mark >= 65 ? ' ✅' : ' ❌'}
-                                    </Text>
-                                </View>
-                            ))}
-                        </Card.Content>
-                    </Card>
-                </ScrollView>
-            )
-            }
-        </SafeAreaView >
+                                ))}
+                            </Card.Content>
+                        </Card>
+                        <View style={{ padding: 5 }} />
+                        <Card>
+                            <Card.Title
+                                title="Projects"
+                                titleStyle={{ fontSize: 14, fontWeight: 'bold' }}
+                                subtitle="List of projects and their status"
+                                subtitleStyle={{ color: "grey" }}
+                                left={(props: any) => <Avatar.Icon {...props} icon="abacus" />}
+                            />
+                            <Card.Content>
+                                {!student.projects_users.length && <Text variant="bodyMedium">No projects found...</Text>}
+                                {student.projects_users.map((project, index) => (
+                                    <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <View style={{ flex: 1 }}>
+                                            <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{project.project.name}</Text>
+                                            <Text variant="bodyMedium">Status: {project.status}</Text>
+                                        </View>
+                                        <Text variant="bodyMedium" style={{ fontWeight: 'bold', marginLeft: 10 }}>
+                                            {project.final_mark}
+                                            {project.final_mark && '/100'}
+                                            {project.status === 'finished' && project.final_mark > 65 && ' ✅'}
+                                            {project.status === 'finished' && project.final_mark <= 65 && ' ❌'}
+                                            {project.status === 'in_progress' && project.final_mark <= 0 && ' ⏳'}
+                                            {project.status === 'in_progress' && project.final_mark == 100 && ' ✅'}
+                                            {project.status === 'searching_a_group' && ' 🔍'}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </Card.Content>
+                        </Card>
+                    </ScrollView>
+                )
+                }
+            </SafeAreaView >
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    main: {
+        flex: 1,
+    },
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',

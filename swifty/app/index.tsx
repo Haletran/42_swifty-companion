@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button, Searchbar } from 'react-native-paper';
+import { Button, Searchbar, Appbar } from 'react-native-paper';
 
 export default function HomeScreen() {
   const [inputValue, setInputValue] = useState('');
@@ -18,15 +18,20 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Searchbar
-        placeholder="Search"
-        onChangeText={(text: any) => setInputValue(text)}
-        value={inputValue}
-        onSubmitEditing={handleSearch}
-      />
-      <Text style={styles.textInfo}>⚠️ Only 1200 searches allowed per hour</Text>
-      <Text style={styles.textInfo}>🔍 Searches: {searches}/1200</Text>
+    <View style={styles.main}>
+      <Appbar.Header>
+        <Appbar.Content title="Swifty_Companion" />
+      </Appbar.Header>
+      <View style={styles.container}>
+        <Searchbar
+          placeholder="Search"
+          onChangeText={(text: any) => setInputValue(text)}
+          value={inputValue}
+          onSubmitEditing={handleSearch}
+        />
+        <Text style={styles.textInfo}>⚠️ Only 1200 searches allowed per hour</Text>
+        <Text style={styles.textInfo}>🔍 Searches: {searches}/1200</Text>
+      </View>
     </View>
   );
 }
@@ -37,13 +42,8 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: 'center',
   },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 4,
+  main: {
+    flex: 1,
   },
   textInfo: {
     textAlign: 'center',
