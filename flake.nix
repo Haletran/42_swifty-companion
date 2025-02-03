@@ -7,8 +7,10 @@ stdenv.mkDerivation {
     ];
     shellHook = ''
         export PATH="$PWD/node_modules/.bin/:$PATH"
-        cd swifty && npm install
-        npx expo prebuild
+        if [ ! -d "swifty/node_modules" ]; then
+            cd swifty && npm install
+        fi
+        #eas build --platform android --profile preview
         npm run web
     '';
 }
