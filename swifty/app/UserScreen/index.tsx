@@ -1,5 +1,5 @@
-import { View, StyleSheet, Image, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { View, StyleSheet, Image, ScrollView, ActivityIndicator, SafeAreaView, FlatList } from 'react-native';
+import { useLocalSearchParams, router } from 'expo-router';
 import React from 'react';
 import { useFetchData, getToken, checkIfTokenIsValid } from '@/hooks/useFetchData';
 import { useEffect, useState } from 'react';
@@ -121,7 +121,7 @@ export default function UserScreen() {
     }
 
     const _goBack = () => {
-        window.history.back();
+        router.push('/');
     }
 
     return (
@@ -186,7 +186,7 @@ export default function UserScreen() {
                             />
                             <Card.Content>
                                 {!student.projects_users.length && <Text variant="bodyMedium">No projects found...</Text>}
-                                <ScrollView style={{ maxHeight: 300, padding: 10 }}>
+                                <ScrollView style={{ maxHeight: 300 }}  contentContainerStyle={{ flexGrow: 1 }} nestedScrollEnabled={true}>
                                     {student.projects_users.map((project, index) => (
                                         <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <View style={{ flex: 1 }}>
