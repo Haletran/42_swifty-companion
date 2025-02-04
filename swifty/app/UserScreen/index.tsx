@@ -3,7 +3,8 @@ import { useLocalSearchParams, router } from 'expo-router';
 import React from 'react';
 import { useFetchData, getToken, checkIfTokenIsValid } from '@/hooks/useFetchData';
 import { useEffect, useState } from 'react';
-import { Card, Text, Avatar, ProgressBar, MD3Colors, Appbar } from 'react-native-paper';
+import { Card, Text, Avatar, ProgressBar, Appbar, IconButton, MD3Colors } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Student {
     name: string;
@@ -97,8 +98,65 @@ export default function UserScreen() {
         }
     };
 
+    const [favorites, setFavorites] = useState<string[]>([]);
+
+    const loadFavorites = async () => {
+        try {
+            const favouritesStr = await AsyncStorage.getItem('favourites');
+            if (favouritesStr) {
+                const parsedFavourites = JSON.parse(favouritesStr);
+                setFavorites(parsedFavourites);
+            }
+        } catch (error) {
+            console.error('Error loading favorites:', error);
+        }
+    };
+
+    const addToFavourites = async () => {
+        try {
+            const favourites = await AsyncStorage.getItem('favourites');
+            if (favourites) {
+                const parsedFavourites = JSON.parse(favourites);
+                if (parsedFavourites.includes(input)) {
+                    return;
+                }
+                if (parsedFavourites.includes(input)) {
+                    await removeFavourites();
+                    return;
+                }
+                parsedFavourites.push(input);
+                await AsyncStorage.setItem('favourites', JSON.stringify(parsedFavourites));
+            } else {
+                await AsyncStorage.setItem('favourites', JSON.stringify([input]));
+            }
+            loadFavorites();
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+
+    const removeFavourites = async () => {
+        try {
+            const favourites = await AsyncStorage.getItem('favourites');
+            if (favourites) {
+                const parsedFavourites = JSON.parse(favourites);
+                if (!parsedFavourites.includes(input)) {
+                    return;
+                }
+                const index = parsedFavourites.indexOf(input);
+                parsedFavourites.splice(index, 1);
+                await AsyncStorage.setItem('favourites', JSON.stringify(parsedFavourites));
+                loadFavorites();
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
     useEffect(() => {
         fetchData();
+        loadFavorites();
     }, [input, token]);
 
     if (data && data.usual_full_name) {
@@ -140,7 +198,28 @@ export default function UserScreen() {
                 {!loading && data && student && (
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <Card>
-                            <Card.Cover source={{ uri: student.photo }} />
+                            <View style={{ position: 'relative' }}>
+                                <Card.Cover source={{ uri: student.photo }} />
+                                {favorites.includes(input) ? (
+                                    <IconButton
+                                        mode='contained'
+                                        icon="star"
+                                        onPress={removeFavourites}
+                                        iconColor='white'
+                                        containerColor='rgb(103, 80, 164)'
+                                        style={{ position: 'absolute', top: 10, right: 10, borderRadius: 20 }}
+                                        animated={true}
+                                        />
+                                ) : (
+                                    <IconButton
+                                        mode='outlined'
+                                        icon="star-outline"
+                                        onPress={addToFavourites}
+                                        style={{ position: 'absolute', top: 10, right: 10, borderRadius: 20 }}
+                                        animated={true}
+                                    />
+                                )}
+                            </View>
                             <View style={{ padding: 10 }} />
                             <Card.Content>
                                 <Text variant="titleLarge">{student.name} ({student.login})</Text>
