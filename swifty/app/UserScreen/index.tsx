@@ -80,6 +80,7 @@ export default function UserScreen() {
                     console.error("Failed to get token");
                 }
             }
+            //console.log(token)
             if (token) {
                 if (await checkIfTokenIsValid(token) == false) {
                     const newToken = await getToken();
@@ -209,7 +210,7 @@ export default function UserScreen() {
                                         containerColor='rgb(103, 80, 164)'
                                         style={{ position: 'absolute', top: 10, right: 10, borderRadius: 20 }}
                                         animated={true}
-                                        />
+                                    />
                                 ) : (
                                     <IconButton
                                         mode='outlined'
@@ -265,7 +266,7 @@ export default function UserScreen() {
                             />
                             <Card.Content>
                                 {!student.projects_users.length && <Text variant="bodyMedium">No projects found...</Text>}
-                                <ScrollView style={{ maxHeight: 300 }}  contentContainerStyle={{ flexGrow: 1 }} nestedScrollEnabled={true}>
+                                <ScrollView style={{ maxHeight: 300 }} contentContainerStyle={{ flexGrow: 1 }} nestedScrollEnabled={true}>
                                     {student.projects_users.map((project, index) => (
                                         <View key={index} style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <View style={{ flex: 1 }}>
