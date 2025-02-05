@@ -14,6 +14,12 @@ Made in `react-native` with `react-native-paper` UI library.
 
 ## Screenshots
 
+<div>
+    <img src="./screenshots/main.png" width="200" >
+    <img src="./screenshots/searchmain.png" width="200">
+    <img src="./screenshots/userscreen1.png" width="200" >
+    <img src="./screenshots/userscreen2.png" width="200">
+</div>
 
 
 ## DEVELOPMENT
