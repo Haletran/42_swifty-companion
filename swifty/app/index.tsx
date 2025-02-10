@@ -52,24 +52,6 @@ export default function HomeScreen() {
         <Text style={[styles.textInfo, { color: '#666', fontSize: 14 }]}>
           ⚠️ API Rate Limit: Maximum 1200 searches per hour
         </Text>
-        {visible && (
-            <Dialog visible={visible} onDismiss={hideDialog}>
-            <Dialog.Icon icon="alert" size={40} color="#ff9800" />
-            <Dialog.Title style={{textAlign: 'center', color: '#333'}}>Invalid Search</Dialog.Title>
-            <Dialog.Content>
-              <Text style={{textAlign: 'center', fontSize: 14, color: '#666'}}>
-              Search field cannot be empty
-              </Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button 
-              onPress={hideDialog}
-              >
-              OK
-              </Button>
-            </Dialog.Actions>
-            </Dialog>
-        )}
         <Card style={{ marginTop: 20, padding: 16, elevation: 4 }}>
         <Card.Title
           title="Favorites"
@@ -101,6 +83,24 @@ export default function HomeScreen() {
           </Card.Content>
           </ScrollView>
         </Card>
+        {visible && (
+            <Dialog visible={visible} onDismiss={hideDialog}>
+            <Dialog.Icon icon="alert" size={40} color="#ff9800" />
+            <Dialog.Title style={{textAlign: 'center', color: '#333'}}>Invalid Search</Dialog.Title>
+            <Dialog.Content>
+              <Text style={{textAlign: 'center', fontSize: 14, color: '#666'}}>
+              Search field cannot be empty
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button 
+              onPress={hideDialog}
+              >
+              OK
+              </Button>
+            </Dialog.Actions>
+            </Dialog>
+        )}
       </View>
     </View>
   );

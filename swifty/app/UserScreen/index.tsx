@@ -78,9 +78,11 @@ export default function UserScreen() {
                     setToken(newToken);
                 } else {
                     console.error("Failed to get token");
+                    setLoading(false);
+                    return;
                 }
             }
-            //console.log(token)
+            console.log(token)
             if (token) {
                 if (await checkIfTokenIsValid(token) == false) {
                     const newToken = await getToken();
