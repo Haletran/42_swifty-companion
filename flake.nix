@@ -17,7 +17,7 @@ stdenv.mkDerivation {
             echo "EXPO_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
             echo "EXPO_PUBLIC_CLIENT_SECRET=$CLIENT_SECRET" >> .env
         fi
-        npm run android2
+        npm run web
         #npx eas build --platform android --profile preview
     '';
 }
